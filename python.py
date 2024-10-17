@@ -1,141 +1,149 @@
-class itemz:
+class Itemz:
+    """
+    A class to represent an item in the inventory.
+
+    Attributes:
+    name : str
+        Name of the item.
+    price : float
+        Price of the item.
+    qty : int
+        Quantity of the item.
+    category : str
+        Category of the item, default is 'general'.
+    env_fee : float
+        Environmental fee, default is 0.
+    """
 
     def __init__(self, name, price, qty):
-
         self.name = name
-
         self.price = price
-
         self.qty = qty
-
         self.category = "general"
-
         self.env_fee = 0
 
-
-
-    def getTotal(self):
-
+    def gettotal(self):
+        """
+        Calculate the total price for the item based on the quantity.
+        """
         return self.price * self.qty
 
-    def getTMostPrices(self):
-
+    def getmostprices(self):
+        """
+        Calculate a discounted price at 60% of the total.
+        """
         return self.price * self.qty * 0.6
 
+class ShoppingCart:
+    """
+    A class to represent a shopping cart.
 
-
-#class to shop
-
-class shoppinCart:
+    Attributes:
+    items : list
+        A list to store items added to the cart.
+    taxrates : float
+        The tax rate applied to the items in the cart, default is 0.08.
+    """
 
     def __init__(self):
-
         self.items = []
-
-        self.taxRate = 0.08
-
-        self.memberDiscount = 0.05
-
-        self.bigSpenderDiscount = 10
-
-        self.couponDiscount = 0.15
-
+        self.taxrates = 0.08
+        self.memberdiscount = 0.05
+        self.bigspenderdiscount = 10
+        self.coupondiscount = 0.15
         self.currency = "USD"
 
+    def additem(self, item):
+        """
+        Add an item to the shopping cart.
 
-
-    def addItem(self, item):
-
-#discount added here
-
+        Parameters:
+        item : object
+            The item to be added to the cart.
+        """
         self.items.append(item)
 
+    def calculatesubtotal(self):
+        """
+        Calculate the subtotal for all items in the shopping cart.
 
-
-    def calculateSubtotal(self):
-
-#todo: fix this in the future i guess
-
+        Returns:
+        float: The subtotal price of all items.
+        """
         subtotal = 0
-
         for item in self.items:
-
-            subtotal += item.getTotal()
-
+            subtotal += item.gettotal()
         return subtotal
 
+    def applydiscount(self, subtotal, ismember, hascoupon):
+        """
+        Apply discounts to the subtotal based on membership and spending amount.
 
+        Parameters:
+        subtotal : float
+            The current subtotal before discounts.
+        ismember : bool
+            Indicates if the customer is a member.
+        hascoupon : bool
+            Indicates if the customer has a coupon.
 
-    def applyDiscounts(self, subtotal, isMember, hasCoupon):
-
-        if isMember == "yes":
-
-            subtotal = subtotal - (subtotal * self.memberDiscount)
+        Returns:
+        float: The subtotal after discounts.
+        """
+        if ismember:
+            subtotal = subtotal - (subtotal * self.memberdiscount)
 
         if subtotal > 100:
+            subtotal = subtotal - self.bigspenderdiscount
 
-            subtotal = subtotal - self.bigSpenderDiscount
+        if hascoupon:
+            subtotal -= subtotal * self.coupondiscount
 
         return subtotal
 
+    def calculatetotal(self, ismember, hascoupon):
+        """
+        Calculate the total after applying discounts to the subtotal.
 
+        Parameters:
+        ismember : bool
+            Indicates if the customer is a member.
+        hascoupon : bool
+            Indicates if the customer has a coupon.
 
-    def calculateTotal(self, isMember, hasCoupon):
-
-#why i need this? @user
-
-        subtotal = self.calculateSubtotal()
-
-        subtotal = self.applyDiscounts(subtotal, isMember, hasCoupon)
-
-        total = subtotal + (subtotal * self.taxRate)
-
-        if hasCoupon == "YES":
-
-            total = total - (total * self.couponDiscount)
-
+        Returns:
+        float: The final total after discounts.
+        """
+        subtotal = self.calculatesubtotal()
+        subtotal = self.applydiscount(subtotal, ismember, hascoupon)
+        total = subtotal + (subtotal * self.taxrates)
         return total
 
-
-
 def main():
+    """
+    Main function to run the shopping cart total calculator.
+    """
+    cart = ShoppingCart()
 
-    cart = shoppinCart()
-
-    item1 = itemz("Apple", 1.5, 10)
-
-    item2 = itemz("Banana", 0.5, 5)
-
-    item3 = itemz("Laptop", "1000", 1)
+    item1 = Itemz("Apple", 1.5, 10)
+    item2 = Itemz("Banana", 0.5, 5)
+    item3 = Itemz("Laptop", 1000, 1)  # Cambiado de string a número
 
     item3.category = "electronics"
 
-    cart.addItem(item1)
+    cart.additem(item1)
+    cart.additem(item2)
+    cart.additem(item3)
 
-    cart.addItem(item2)
+    ismember = True
+    hascoupon = True
 
-    cart.addItem(item3)
-
-    isMember = True
-
-    hasCoupon = "YES"
-
-
-
-    total = cart.calculateTotal(isMember, hasCoupon)
-
-
+    total = cart.calculatetotal(ismember, hascoupon)
 
     if total < 0:
-
         print("Error in calculation!")
-
     else:
-
         print("The total price is: $" + str(int(total)))
 
-
-
 if __name__ == "__main__":
-
     main()
